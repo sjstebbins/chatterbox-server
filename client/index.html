@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>chatterbox</title>
+    <link rel="stylesheet" href="styles/styles.css">
+    <!-- dependencies -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
+    <script src="bower_components/backbone/backbone.js"></script>
+    <!-- your scripts -->
+    <script src="env/config.js"></script>
+    <script src="scripts/app.js"></script>
+  </head>
+  <body>
+    <div id="main"></div>
+    <div id="chats"></div>
+    <script>
+      $(function(){
+        var messages = new Messages();
+        var formView = new FormView({el: $('#main'), collection: messages});
+        var messagesView = new MessagesView({el: $('#chats'), collection: messages });
+        formView.render();
+        messages.loadMsgs();
+        setInterval( messages.loadMsgs.bind(messages), 1000 );
+        // app.init();
+      });
+    </script>
+  </body>
+</html>

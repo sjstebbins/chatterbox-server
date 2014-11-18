@@ -5,7 +5,7 @@ body {
     font-family: arial, sans-serif;
 }
 
-#main {
+#main, #chats    {
     width: 500px;
     margin: auto;
     text-align: left;
@@ -59,18 +59,17 @@ form input[type=text] {
     padding: 5px;
 }
 
-.message {
+.chat {
     padding: 5px;
     margin-bottom: 5px;
     background-color: #eee;
 }
 
-.message .username {
+.chat .username {
     font-weight: 800;
-    color: #00f;
 }
 
-.message:hover {
+.chat:hover {
     background-color: #ddd;
 }
 
@@ -82,8 +81,4 @@ form input[type=text] {
 
 .spinner img {
     padding: 10px;
-}
-
-.friend {
-    font-weight: bold;
 }

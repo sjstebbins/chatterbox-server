@@ -11,7 +11,8 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-var rooms = { '/classes/messages': [], '/classes/room1': []};
+// var rooms = { '/classes/messages': [], '/classes/room1': []};
+var fs = require('fs');
 exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -45,6 +46,7 @@ exports.requestHandler = function(request, response) {
   var result = 'Page not found';
   if (request.method === 'GET'){
     var url = optionsParse();
+    rooms = JSON.parse(fs.readFileSync('messages.json'));
     statusCode = rooms[url] ? 200: 404;
     var data = JSON.stringify({results: rooms[url] || []});
     result = data;
@@ -60,8 +62,12 @@ exports.requestHandler = function(request, response) {
     request.on('end', function(){
       message = JSON.parse(message);
       message.objectId = Math.floor(Math.random() * 1000 );
+      // rooms[request.url] = rooms[request.url] || [];
+      // rooms[request.url].push(message);s
+      rooms = JSON.parse(fs.readFileSync('messages.json'));
       rooms[request.url] = rooms[request.url] || [];
       rooms[request.url].push(message);
+      fs.writeFileSync('messages.json', JSON.stringify(rooms));
       responseClean();
     });
   } else if (request.method === 'OPTIONS') {

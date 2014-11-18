@@ -29,18 +29,26 @@ exports.requestHandler = function(request, response) {
   // console.logs in your code.
   console.log("Serving request type " + request.method + " for url " + request.url);
 
+  var responseClean = function(){
+      headers['Content-Type'] = "application/json";
+      response.writeHead(statusCode, headers);
+      response.end(result);
+  };
+  var optionsParse = function(){
+    return request.url.replace(/\?(.*)/,'');
+  };
+
 
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
   var statusCode = 404;
   var result = 'Page not found';
   if (request.method === 'GET'){
-    statusCode = rooms[request.url] ? 200: 404;
-    var data = JSON.stringify({results: rooms[request.url] || []});
+    var url = optionsParse();
+    statusCode = rooms[url] ? 200: 404;
+    var data = JSON.stringify({results: rooms[url] || []});
     result = data;
-    headers['Content-Type'] = "application/json";
-    response.writeHead(statusCode, headers);
-    response.end(result);
+    responseClean();
   }
   else if (request.method === 'POST'){
     statusCode = 201;
@@ -50,16 +58,17 @@ exports.requestHandler = function(request, response) {
     });
     result = 'Post Success';
     request.on('end', function(){
+      message = JSON.parse(message);
+      message.objectId = Math.floor(Math.random() * 1000 );
       rooms[request.url] = rooms[request.url] || [];
-      rooms[request.url].push(JSON.parse(message));
-      headers['Content-Type'] = "application/json";
-      response.writeHead(statusCode, headers);
-      response.end(result);
+      rooms[request.url].push(message);
+      responseClean();
     });
+  } else if (request.method === 'OPTIONS') {
+    statusCode = 200;
+    responseClean();
   } else {
-    headers['Content-Type'] = "application/json";
-    response.writeHead(statusCode, headers);
-    response.end(result);
+    responseClean();
   }
 
 

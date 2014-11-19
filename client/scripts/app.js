@@ -106,6 +106,35 @@ var MessageView = Backbone.View.extend({
 
 });
 
+var ChartView = Backbone.View.extend({
+
+  initialize: function(){
+    this.render();
+    this.collection.on('add',function(){
+      if (this.collection.length !== this.messageLength){
+        this.chart.load({
+          columns:[
+            ['messages'].concat(_.pluck(this.chart.data()[0].values,'value').concat(this.collection.length))
+          ]
+        });
+        this.messageLength = this.collection.length;
+      }
+    },this);
+  },
+
+  render: function(){
+    this.chart = c3.generate({
+      bindto: '#chart',
+      data: {
+        columns: [
+          ['messages'].concat(this.collection.length),
+        ]
+      }
+    });
+  }
+
+});
+
 
 // YOUR CODE HERE:
 app = {

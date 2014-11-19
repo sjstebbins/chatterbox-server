@@ -11,6 +11,8 @@ app.all('*',function(req,res,next){
   res.header("access-control-max-age", 10);
   next();
 });
+
+app.use('/',express.static('../client'));
 // app.get('/', function (req, res) {
 //   res.send('Hello World!');
 // });

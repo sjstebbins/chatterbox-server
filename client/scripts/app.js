@@ -108,14 +108,41 @@ var MessageView = Backbone.View.extend({
 
 var ChartView = Backbone.View.extend({
 
+  getPerUserMessageCount: function(){
+    var users = {};
+    this.collection.forEach(function(message,index){
+      users[message.get('username')] = users[message.get('username')] || 0;
+      users[message.get('username')]++;
+    });
+    return users;
+  },
+
+  constructColumnsArray: function(priorData){
+    var users = this.getPerUserMessageCount();
+    var result = [];
+    var data;
+    if (priorData){
+      _.each(priorData, function(valueSet) {
+         data = _.pluck(valueSet.values,'value');
+         if (users[valueSet.id]){
+          users[valueSet.id] = data.concat(users[valueSet.id]);
+         } else {
+          users[valueSet.id] = data;
+         }
+      });
+    }
+    for (var user in users) {
+      result.push([user].concat(users[user]));
+    }
+    return result;
+  },
+
   initialize: function(){
     this.render();
     this.collection.on('add',function(){
       if (this.collection.length !== this.messageLength){
         this.chart.load({
-          columns:[
-            ['messages'].concat(_.pluck(this.chart.data()[0].values,'value').concat(this.collection.length))
-          ]
+          columns: this.constructColumnsArray(this.chart.data())
         });
         this.messageLength = this.collection.length;
       }
@@ -126,9 +153,7 @@ var ChartView = Backbone.View.extend({
     this.chart = c3.generate({
       bindto: '#chart',
       data: {
-        columns: [
-          ['messages'].concat(this.collection.length),
-        ]
+        columns: this.constructColumnsArray()
       }
     });
   }
